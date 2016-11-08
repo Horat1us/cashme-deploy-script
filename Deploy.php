@@ -85,7 +85,7 @@ class Deploy
      */
     public function log($message, $type = 'INFO')
     {
-        echo $message;
+        echo $message . PHP_EOL;
 
         if (!$this->_log) {
             return;
@@ -118,7 +118,7 @@ class Deploy
             chdir($this->_directory);
             $this->log('Changing working directory... ');
 
-            if(!file_exists('.git') || !is_dir('.git')) {
+            if (!file_exists('.git') || !is_dir('.git')) {
                 throw new Exception(".git directory does not exists in #{$this->_directory}");
             }
 
