@@ -134,13 +134,42 @@ class Deploy
             exec('chmod -R og-rx .git');
             $this->log('Securing .git directory... ');
 
+            $isCallable = is_callable($this->post_deploy);
+
             if (is_callable($this->post_deploy)) {
-                call_user_func($this->post_deploy, [$this]);
+                call_user_func($this->post_deploy, [&$this]);
             }
 
             $this->log('Deployment successful.');
         } catch (Exception $e) {
             $this->log($e->getMessage(), 'ERROR');
         }
+    }
+
+    /**
+     * @param callable $func
+     */
+    public function setPostDeploy(callable $func = null)
+    {
+        $this->post_deploy = $func;
+    }
+
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    public function runPostDeploy()
+    {
+        if (is_callable($this->post_deploy)) {
+            $postDeployResult = call_user_func($this->post_deploy, [$this]);
+
+            if (!$postDeployResult) {
+                throw new Exception("Error while trying to run post deploy callable");
+            }
+
+            return true;
+        }
+
+        return true;
     }
 }

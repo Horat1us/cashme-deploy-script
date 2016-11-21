@@ -17,5 +17,11 @@ if (!$config->checkAccess(new Access())) {
 }
 
 $deploy = new Deploy($config->rootDir, ['log' => $config->logPath, 'branch' => $config->branch, 'remote' => $config->remote,]);
-$config->setPostDeploy($deploy);
+
+$postDeploy = $config->getPostDeploy();
+
+$postDeploy
+    ? $deploy->setPostDeploy($postDeploy)
+    : $deploy->setPostDeploy();
+
 $deploy->execute();

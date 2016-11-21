@@ -43,24 +43,12 @@ class DeployConfig extends Config
     }
 
     /**
-     * @param Deploy $deploy
-     * @param callable $postDeploy
-     * @return $this
+     * @return callable|null
      */
-    public function setPostDeploy(Deploy &$deploy, callable $postDeploy = null)
+    public function getPostDeploy()
     {
-        if (!$postDeploy) {
-
-            $deploy->post_deploy = file_exists("PostDeploy.php") ? include("PostDeploy.php") : false;
-
-            if (!is_callable($deploy->post_deploy)) {
-
-                throw new UnexpectedValueException("Wrong postDeploy function #" . gettype($deploy->post_deploy));
-            }
-        }
-
-        $deploy->post_deploy = $postDeploy;
-
-        return $this;
+        return file_exists('PostDeploy.php')
+            ? include("PostDeploy.php")
+            : null;
     }
 }
