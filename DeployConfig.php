@@ -49,7 +49,7 @@ class DeployConfig extends Config
      */
     public function setPostDeploy(Deploy &$deploy, callable $postDeploy = null)
     {
-        if ($postDeploy) {
+        if (!$postDeploy) {
 
             $deploy->post_deploy = file_exists("PostDeploy.php") ? include("PostDeploy.php") : false;
 
