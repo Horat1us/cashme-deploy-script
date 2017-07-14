@@ -8,7 +8,10 @@
 
 namespace Horat1us\Deploy;
 
-use Symfony\Component\Yaml\Yaml;
+use Horat1us\Deploy\Configs\AppConfig;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Security;
 
 
 /**
@@ -18,39 +21,26 @@ use Symfony\Component\Yaml\Yaml;
 class Application
 {
     /**
-     * @var Application
-     */
-    protected static $instance;
-
-    /**
-     * @param array ...$args
-     * @return Response
-     */
-    public static function run(...$args): Response
-    {
-        static::$instance = static::$instance ?? new static(...$args);
-        return static::$instance->getResponse();
-    }
-
-    /**
-     * @var string
-     */
-    public $route;
-
-    /**
      * @var array
      */
     public $config;
 
     /**
-     * Application constructor.
-     * @param string|null $route
+     * @var Request
      */
-    public function __construct(string $route = null)
+    protected $request;
+
+    /**
+     * Application constructor.
+     *
+     * @param Request $request
+     * @param array $config Verified by AppConfig
+     * @see AppConfig
+     */
+    public function __construct(Request $request, array $config)
     {
-        $this->route = $route;
-        $config = new Config();
-        $this->config = $config->get();
+        $this->request = $request;
+        $this->config = $config[AppConfig::ROOT];
     }
 
     /**
@@ -85,9 +75,28 @@ class Application
     public function getProject()
     {
         foreach ($this->config['projects'] as $route => $config) {
-            if ($route === $this->route) {
+            if ($route === $this->request->get('project')) {
                 return new Project($config);
             }
         }
+    }
+
+    /**
+     * @param object $object
+     * @param array $config
+     * @param array $exclude
+     *
+     * @return object
+     */
+    public static function configure(object $object, array $config, array $exclude = [])
+    {
+        foreach ($config as $key => $value) {
+            if (empty($value) || in_array($key, $exclude)) {
+                continue;
+            }
+
+            $object->{$key} = $value;
+        }
+        return $object;
     }
 }

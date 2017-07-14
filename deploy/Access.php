@@ -8,9 +8,7 @@
 
 namespace Horat1us\Deploy;
 
-use Vectorface\Whip\IpRange\Ipv4Range;
-use Vectorface\Whip\Whip;
-
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class Access
@@ -29,14 +27,29 @@ class Access extends Component
     public $allowed = ['127.0.0.1'];
 
     /**
+     * @var Request
+     */
+    protected $request;
+
+    /**
+     * Access constructor.
+     * @param Request $request
+     * @param array $config
+     */
+    public function __construct(Request $request, array $config = [])
+    {
+        $this->request = $request;
+
+        parent::__construct($config);
+    }
+
+    /**
      * @return bool
      */
     public function isAllowed(): bool
     {
-        $whip = new Whip(Whip::REMOTE_ADDR);
-
-        $currentIp = $whip->getValidIpAddress();
-        if ($currentIp === false) {
+        $currentIp = $this->request->getClientIp();
+        if (is_null($currentIp)) {
             return false;
         }
 
@@ -58,9 +71,8 @@ class Access extends Component
      */
     protected function check(array $ranges, string $current)
     {
-        foreach ($ranges as $range) {
-            $range = new Ipv4Range($range);
-            if ($range->containsIp($current)) {
+        foreach ($ranges as $ip) {
+            if ($ip === $current) {
                 return true;
             }
         }

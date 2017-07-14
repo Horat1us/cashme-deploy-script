@@ -54,3 +54,4 @@ PostDeploy.php
 /vendor/
 
 config.yaml
+*.project.yaml

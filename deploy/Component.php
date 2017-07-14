@@ -20,12 +20,6 @@ class Component
      */
     public function __construct(array $config = [])
     {
-        foreach ($config as $key => $value) {
-            if (empty($value)) {
-                continue;
-            }
-
-            $this->{$key} = $value;
-        }
+        Application::configure($this, $config);
     }
 }

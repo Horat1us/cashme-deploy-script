@@ -12,13 +12,17 @@
     "autoload": {
         "psr-4": {
             "Horat1us\\Deploy\\": "deploy/"
-        }
+        },
+        "files": [
+            "deploy/Helpers/array_multi_search.php"
+        ]
     },
     "require": {
-        "symfony/yaml": "^3.3",
-        "vectorface/whip": "^0.3.1",
         "psr/log": "^1.0",
-        "coyl/git": "^0.1.6"
+        "symfony/yaml": "^3.3",
+        "symfony/process": "^3.3",
+        "symfony/http-foundation": "^3.3",
+        "symfony/config": "^3.3"
     },
     "scripts": {
         "serve": "php -S localhost:8000 -t web/",

@@ -1,15 +1,12 @@
-access:
-  forbidden:
-    - 8.8.8.8
-  allowed:
-    - 127.0.0.1
-alias:
-  php: /usr/bin/php
-projects:
-  cashme:
-    path: /Users/horat1us/Projects/cashme-backend
-    npm: true
-    composer: true
-    scripts:
-      - command: php yii migrate
-        trigger: console/migrations
+git_deploy:
+  access:
+    forbidden: [8.8.8.8] # Blocked IP addresses
+    allowed: 127.0.0.1 # IP whitelist
+  projects:
+    cashme-back-end:
+      path: /Users/horat1us/Projects/cashme-deploy-script # Must exist and contain git repository
+    deploy-script: /Users/horat1us/Projects/cashme-deploy-script # You can just specify path
+    moneyboom-frontend:
+      path: /Users/horat1us/Projects/moneyboom-frontend
+      configName: .deploy.yaml # Config file name inside a project (default .deploy.yaml)
+      configPath: project.example.yaml # Config file name inside current directory or full path to file (link /var/www/deploy.yaml)
