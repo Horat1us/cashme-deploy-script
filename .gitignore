@@ -51,3 +51,6 @@ settings.json
 deployment.log
 
 PostDeploy.php
+/vendor/
+
+config.yaml

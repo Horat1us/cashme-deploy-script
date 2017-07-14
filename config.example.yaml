@@ -1,0 +1,15 @@
+access:
+  forbidden:
+    - 8.8.8.8
+  allowed:
+    - 127.0.0.1
+alias:
+  php: /usr/bin/php
+projects:
+  cashme:
+    path: /Users/horat1us/Projects/cashme-backend
+    npm: true
+    composer: true
+    scripts:
+      - command: php yii migrate
+        trigger: console/migrations

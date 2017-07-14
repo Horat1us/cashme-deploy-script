@@ -1,7 +1,0 @@
-{
-  "remote": "origin",
-  "branch": "master",
-  "rootDir": "/var/www",
-  "allowedIPs": false,
-  "logPath": "/var/www/deployment/error.log"
-}
