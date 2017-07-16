@@ -13,7 +13,7 @@ namespace Horat1us\Deploy;
  * Class Trigger
  * @package Horat1us\Deploy
  */
-class Trigger
+class Trigger extends Extension
 {
     /**
      * @var string[]

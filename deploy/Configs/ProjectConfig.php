@@ -21,34 +21,13 @@ use Symfony\Component\Yaml\Yaml;
  */
 class ProjectConfig implements ConfigurationInterface
 {
-    const ROOT = 'git_deploy_project';
-    const FILENAME = '.deploy.yaml';
-
     /**
-     * @param $project
+     * @param string $projectConfigPath
      * @return array
      */
-    public static function load($project)
+    public static function load($projectConfigPath)
     {
-        if (is_string($project)) {
-            $path = $project . DIRECTORY_SEPARATOR . static::FILENAME;
-        } elseif (is_array($project)) {
-            if (array_key_exists('configPath', $project)) {
-                $path = $project['configPath'];
-            } elseif (array_key_exists('configName', $project)) {
-                $path = $project['configName'];
-            } else {
-                return static::load($project['path']);
-            }
-        } else {
-            throw new \InvalidArgumentException("You must specify project from AppConfig");
-        }
-
-        if (!file_exists($path)) {
-            throw new InvalidConfigurationException("Project config $path does not exists");
-        }
-
-        $config = Yaml::parse(file_get_contents($path));
+        $config = Yaml::parse(file_get_contents($projectConfigPath));
         $processor = new Processor;
         $configuration = new static;
 

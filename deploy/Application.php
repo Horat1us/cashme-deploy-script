@@ -8,53 +8,53 @@
 
 namespace Horat1us\Deploy;
 
-use Horat1us\Deploy\Configs\AppConfig;
+use Horat1us\Deploy\Services\AccessService;
+use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Security;
 
 
 /**
  * Class Application
  * @package Horat1us\Deploy
  */
-class Application
+class Application implements ConfigurationInterface
 {
+    const ROOT = 'git_deploy';
+
     /**
      * @var array
      */
-    public $config;
+    public $access = [];
 
     /**
-     * @var Request
+     * @var array
      */
-    protected $request;
+    public $projects = [];
 
     /**
      * Application constructor.
-     *
-     * @param Request $request
-     * @param array $config Verified by AppConfig
-     * @see AppConfig
+     * @param array $config
      */
-    public function __construct(Request $request, array $config)
+    public function __construct(array $config = [])
     {
-        $this->request = $request;
-        $this->config = $config[AppConfig::ROOT];
+        configure_object($this, $config);
     }
 
     /**
+     * @param Request $request
      * @return Response
      */
-    public function getResponse(): Response
+    public function run(Request $request): Response
     {
-        $access = new Access($this->config['access']);
+        $access = new AccessService($this->access);
 
-        if (!$access->isAllowed()) {
+        if (!$access->isAllowed($request->getClientIp())) {
             return new Response('Not allowed', 403);
         }
 
-        if (!($project = $this->getProject()) instanceof Project) {
+        if (!($project = $this->getProject($request->get('project'))) instanceof Project) {
             return new Response("Invalid project", 404);
         }
 
@@ -70,33 +70,85 @@ class Application
     }
 
     /**
+     * @param string $name
      * @return Project|null
      */
-    public function getProject()
+    public function getProject(string $name)
     {
-        foreach ($this->config['projects'] as $route => $config) {
-            if ($route === $this->request->get('project')) {
+        foreach ($this->projects as $route => $config) {
+            if ($route === $name) {
                 return new Project($config);
             }
         }
     }
 
     /**
-     * @param object $object
-     * @param array $config
-     * @param array $exclude
+     * Generates the configuration tree builder.
      *
-     * @return object
+     * @todo: reformat
+     * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder The tree builder
      */
-    public static function configure(object $object, array $config, array $exclude = [])
+    public function getConfigTreeBuilder()
     {
-        foreach ($config as $key => $value) {
-            if (empty($value) || in_array($key, $exclude)) {
-                continue;
-            }
+        $treeBuilder = new TreeBuilder();
 
-            $object->{$key} = $value;
-        }
-        return $object;
+        $root = $treeBuilder->root(static::ROOT);
+        $root
+            ->children()
+                ->arrayNode('access')
+                    ->children()
+                        ->arrayNode('forbidden')
+                            ->beforeNormalization()
+                                ->ifEmpty()->thenEmptyArray()
+                                ->castToArray()
+                            ->end()
+                            ->variablePrototype()->end()
+                        ->end() // Forbidden
+                        ->arrayNode('allowed')
+                            ->beforeNormalization()
+                                ->ifEmpty()->thenEmptyArray()
+                                ->castToArray()
+                            ->end()
+                            ->variablePrototype()->end()
+                        ->end() // Allowed
+                    ->end() // Access children
+                ->end() // Access
+                ->arrayNode('projects')
+                    ->isRequired()
+                    ->arrayPrototype()
+                        ->beforeNormalization()
+                            ->ifString()->then(function ($v) {
+                                return [
+                                    'path' => $v,
+                                ];
+                            })
+                        ->end()
+                        ->children()
+                            ->variableNode('path')
+                                ->beforeNormalization()
+                                    ->ifTrue(function ($v) {
+                                        return !file_exists($v);
+                                    })->thenInvalid("Project does not exists %s")
+                                    ->ifTrue(function ($v) {
+                                        return !file_exists($v . DIRECTORY_SEPARATOR . '.git');
+                                    })->thenInvalid("%s is not a git directory")
+                                ->end() // Normalization
+                                ->isRequired()
+                            ->end() // Path
+                            ->variableNode('configName')->end()
+                            ->variableNode('configPath')
+                                ->beforeNormalization()
+                                    ->ifTrue(function ($v) {
+                                        return !file_exists($v);
+                                    })->thenInvalid('Project file does not exists %s')
+                                ->end()
+                            ->end() // Config Path
+                        ->end() // Children
+                    ->end() // Array prototype
+                ->end() // Projects
+            ->end();
+
+
+        return $treeBuilder;
     }
 }

@@ -2,12 +2,11 @@
 
 require(dirname(__DIR__) . '/bootstrap.php');
 
-$config = \Horat1us\Deploy\Configs\AppConfig::load(__ROOT__);
 
-$app = new \Horat1us\Deploy\Application(
-    \Symfony\Component\HttpFoundation\Request::createFromGlobals(),
-    $config
-);
+$locator = new \Symfony\Component\Config\FileLocator([__ROOT__]);
+$loader = new \Horat1us\Deploy\Loaders\ApplicationYamlLoader($locator);
+$app = $loader->load(__ROOT__ . '/config.yaml');
+
 $app
-    ->getResponse()
+    ->run()
     ->send();

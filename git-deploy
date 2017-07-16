@@ -8,6 +8,6 @@ use Symfony\Component\Console\Application;
 
 $application = new Application();
 
-$application->register(\Horat1us\Deploy\Console\Commands\InitCommand::class);
+$application->add(new \Horat1us\Deploy\Console\Commands\InitCommand());
 
 $application->run();

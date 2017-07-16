@@ -14,7 +14,8 @@
             "Horat1us\\Deploy\\": "deploy/"
         },
         "files": [
-            "deploy/Helpers/array_multi_search.php"
+            "deploy/Helpers/array_multi_search.php",
+            "deploy/Helpers/configure_object.php"
         ]
     },
     "require": {
