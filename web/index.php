@@ -1,8 +1,6 @@
 <?php
 
-define('__ROOT__', dirname(__DIR__));
-require(__ROOT__ . '/vendor/autoload.php');
-
+require(dirname(__DIR__) . '/bootstrap.php');
 
 $config = \Horat1us\Deploy\Configs\AppConfig::load(__ROOT__);
 

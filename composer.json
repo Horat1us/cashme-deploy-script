@@ -22,7 +22,8 @@
         "symfony/yaml": "^3.3",
         "symfony/process": "^3.3",
         "symfony/http-foundation": "^3.3",
-        "symfony/config": "^3.3"
+        "symfony/config": "^3.3",
+        "symfony/console": "^3.3"
     },
     "scripts": {
         "serve": "php -S localhost:8000 -t web/",
