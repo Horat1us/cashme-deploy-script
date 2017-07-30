@@ -24,10 +24,14 @@
         "symfony/process": "^3.3",
         "symfony/http-foundation": "^3.3",
         "symfony/config": "^3.3",
+        "symfony/filesystem": "^3.3",
         "symfony/console": "^3.3"
     },
     "scripts": {
         "serve": "php -S localhost:8000 -t web/",
         "init-config": "php -r \"file_put_contents('config.yaml', file_get_contents('config.example.yaml'));\""
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.2"
     }
 }

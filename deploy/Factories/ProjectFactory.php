@@ -10,7 +10,7 @@ namespace Horat1us\Deploy\Factories;
 
 
 use Horat1us\Deploy\Configs\ProjectConfig;
-use Horat1us\Deploy\Exceptions\NotGitRepositoryException;
+use Horat1us\Deploy\Exceptions\GitNotFoundException;
 use Horat1us\Deploy\Exceptions\ProjectException;
 use Horat1us\Deploy\Exceptions\ProjectNotFoundException;
 use Horat1us\Deploy\Project;
@@ -68,7 +68,7 @@ class ProjectFactory
 
 
     /**
-     * @throws NotGitRepositoryException
+     * @throws GitNotFoundException
      * @throws ProjectException
      * @throws ProjectNotFoundException
      * @return Project
@@ -82,7 +82,7 @@ class ProjectFactory
         }
 
         if (!file_exists($path . '.git') || !is_dir($path . '.git')) {
-            throw new NotGitRepositoryException($this->getConfig());
+            throw new GitNotFoundException($this->getConfig());
         }
 
         $configPath = $this->configPath?? ($path . $this->configName);
@@ -105,7 +105,7 @@ class ProjectFactory
         }
 
         if (!file_exists($path . '.git') || !is_dir($path . '.git')) {
-            throw new NotGitRepositoryException($path);
+            throw new GitNotFoundException($path);
         }
 
         $configPath = $config['configPath']

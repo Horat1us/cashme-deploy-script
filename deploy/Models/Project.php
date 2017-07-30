@@ -140,30 +140,6 @@ class Project implements ConfigurationInterface
     }
 
     /**
-     * @param string $input
-     * @return array
-     */
-    protected function parseOutput(string $input): array
-    {
-        $match = preg_match_all('/(delete|create) mode (\d+) (.+)/', $input, $matches);
-
-        if (!$match) {
-            return [];
-        }
-        $output = [];
-        foreach ($matches[0] as $matchIndex => $fullMatch) {
-            $output[$matchIndex] = [
-                'mode' => $matches[1][$matchIndex],
-                'permissions' => $matches[2][$matchIndex],
-                'filename' => $matches[3][$matchIndex],
-            ];
-        }
-
-        return $output;
-    }
-
-
-    /**
      * Generates the configuration tree builder.
      *
      * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder The tree builder
