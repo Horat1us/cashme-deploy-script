@@ -1,0 +1,37 @@
+{
+    "name": "horat1us/cashme-deploy-script",
+    "description": "Deploy app",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alexander Letnikow",
+            "email": "reclamme@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Horat1us\\Deploy\\": "deploy/"
+        },
+        "files": [
+            "deploy/Helpers/array_multi_search.php",
+            "deploy/Helpers/configure_object.php"
+        ]
+    },
+    "require": {
+        "psr/log": "^1.0",
+        "symfony/yaml": "^3.3",
+        "symfony/process": "^3.3",
+        "symfony/http-foundation": "^3.3",
+        "symfony/config": "^3.3",
+        "symfony/filesystem": "^3.3",
+        "symfony/console": "^3.3"
+    },
+    "scripts": {
+        "serve": "php -S localhost:8000 -t web/",
+        "init-config": "php -r \"file_put_contents('config.yaml', file_get_contents('config.example.yaml'));\""
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.2"
+    }
+}

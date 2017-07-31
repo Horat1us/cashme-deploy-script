@@ -1,0 +1,18 @@
+git_deploy_project:
+  npm: null # Will run npm i only when package.json exists and is modified
+  composer: false # Will not run composer install even when composer.lock is modified
+  scripts:
+    # Run migrations when something in console/migrations folder modified
+    - command: php yii migrate
+      trigger: console/migrations/
+    # Run migrations and seeds anyway
+    - command: [php yii migrate, php yii seed/run]
+    # Make npm install when package.json or webpack/package.json is modified
+    - command: npm i
+      trigger: [package.json, webpack/package.json]
+    # Run command only when package.json and any of js file modified
+    - command: npm i; npm run deploy
+      trigger:
+        - package.json
+        - path: /.+\.js/ # Use regex for file matching (see PHP regex)
+          exact: false # Default = true
