@@ -10,9 +10,10 @@ namespace Horat1us\Deploy\Factories;
 
 
 use Horat1us\Deploy\Configs\ProjectConfig;
-use Horat1us\Deploy\Exceptions\GitNotFoundException;
+use Horat1us\Deploy\Exceptions\InvalidGitRepository;
 use Horat1us\Deploy\Exceptions\ProjectException;
 use Horat1us\Deploy\Exceptions\ProjectNotFoundException;
+use Horat1us\Deploy\GitPath;
 use Horat1us\Deploy\Project;
 
 /**
@@ -31,13 +32,13 @@ class ProjectFactory
      * Config filename in project directory
      * @var string
      */
-    public $configName;
+    public $configName = '.deploy.yml';
 
     /**
      * Full path to project configuration
      * @var string
      */
-    public $configPath = '.deploy.yml';
+    public $configPath;
 
     /**
      * ProjectFactory constructor.
@@ -68,22 +69,14 @@ class ProjectFactory
 
 
     /**
-     * @throws GitNotFoundException
+     * @throws InvalidGitRepository
      * @throws ProjectException
      * @throws ProjectNotFoundException
      * @return Project
      */
     public function instantiate()
     {
-        $path = rtrim($this->path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-
-        if (!file_exists($path) || !is_dir($path)) {
-            throw new ProjectNotFoundException($this->getConfig());
-        }
-
-        if (!file_exists($path . '.git') || !is_dir($path . '.git')) {
-            throw new GitNotFoundException($this->getConfig());
-        }
+        $path = new GitPath($this->path);
 
         $configPath = $this->configPath?? ($path . $this->configName);
 
@@ -105,7 +98,7 @@ class ProjectFactory
         }
 
         if (!file_exists($path . '.git') || !is_dir($path . '.git')) {
-            throw new GitNotFoundException($path);
+            throw new InvalidGitRepository($path);
         }
 
         $configPath = $config['configPath']

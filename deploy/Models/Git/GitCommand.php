@@ -9,7 +9,7 @@
 namespace Horat1us\Deploy\Models\Git;
 
 use Horat1us\Deploy\Exceptions\GitException;
-use Horat1us\Deploy\Exceptions\GitNotFoundException;
+use Horat1us\Deploy\Exceptions\InvalidGitRepository;
 use Horat1us\Deploy\Services\GitExecutionService;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
@@ -53,7 +53,7 @@ class GitCommand
     /**
      * @param string $path
      *
-     * @throws GitNotFoundException
+     * @throws InvalidGitRepository
      * @throws FileNotFoundException
      */
     public function setPath(string $path)
@@ -62,7 +62,7 @@ class GitCommand
             throw new FileNotFoundException(null, 0, null, $path);
         }
         if (!file_exists($path . '/.git')) {
-            throw new GitNotFoundException($path);
+            throw new InvalidGitRepository($path);
         }
 
         $this->path = $path;

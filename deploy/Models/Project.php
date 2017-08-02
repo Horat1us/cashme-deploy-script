@@ -25,110 +25,32 @@ use Symfony\Component\Yaml\Yaml;
 class Project implements ConfigurationInterface
 {
     /**
-     * Path to project
-     *
-     * @var bool
+     * @immutable
+     * @var GitPath
      */
-    public $path;
+    protected $path;
 
     /**
-     * Git remote
-     *
-     * @var string
+     * Project constructor.
+     * @param GitPath $path
      */
-    public $remote = 'origin';
-
-    /**
-     * Git branch
-     *
-     * @var string
-     */
-    public $branch = 'master';
-
-    /**
-     * Can we use file with settings in project
-     *
-     * @var bool
-     */
-    public $remoteConfig = false;
-
-    /**
-     * Should npm packages be installed
-     *
-     * @var bool
-     */
-    public $npm;
-
-    /**
-     * Should composer packages be installed
-     *
-     * @var bool
-     */
-    public $composer;
-
-    /**
-     * Scripts to be executed in project folder
-     *
-     * @var string
-     */
-    public $commands = [];
-
-    /**
-     * Lists of changed files after last pull
-     *
-     * @var string[]
-     */
-    public $changedFiles;
-
-    /**
-     * @return bool
-     */
-    public function deploy(): bool
+    public function __construct(GitPath $path)
     {
-        try {
-            $process = new Process("git pull {$this->remote} {$this->branch}", $this->path);
-            $response = $process
-                ->mustRun()
-                ->getOutput();
-        } catch (ProcessFailedException $ex) {
-            $this->logger->alert("Failed to pull in repository", [
-                'path' => $this->path,
-                'output' => $ex->getProcess()->getOutput(),
-            ]);
-            return false;
-        }
+        $this->path = $path;
+    }
 
-        $this->changedFiles = $this->parseOutput($response);
-
-        if (
-            $this->remoteConfig
-            && array_multi_search(static::CONFIG_FILE_NAME, $this->changedFiles, 'filename')
-        ) {
-            $this->reloadSettings();
-        }
-
-        $this->executeCommands();
+    /**
+     * @return GitPath
+     */
+    public function getPath(): GitPath
+    {
+        return $this->path;
     }
 
     /**
      * @return void
      */
-    protected function executeCommands()
-    {
-        /** @var Command[] $commands */
-        $commands = array_map(function ($command): Command {
-            return CommandFactory::instantiate($command);
-        }, (array)$this->commands);
-
-        foreach ($commands as $command) {
-            $command->execute($this);
-        }
-    }
-
-    /**
-     * @return void
-     */
-    protected function reloadSettings()
+    public function load()
     {
         $filePath = $this->path . DIRECTORY_SEPARATOR . static::CONFIG_FILE_NAME;
         if (file_exists($filePath)) {

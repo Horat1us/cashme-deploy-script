@@ -85,7 +85,6 @@ class Application implements ConfigurationInterface
     /**
      * Generates the configuration tree builder.
      *
-     * @todo: reformat
      * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder The tree builder
      */
     public function getConfigTreeBuilder()
